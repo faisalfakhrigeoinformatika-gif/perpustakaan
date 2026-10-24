@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Perpustakaan</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    h1, h2 { color: #333; }
+    form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    input { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background-color: #218838; }
+    ul { list-style-type: none; padding: 0; }
+    li { background: #f4f4f4; margin: 5px 0; padding: 10px 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-delete { background-color: #dc3545; }
+    .btn-delete:hover { background-color: #c82333; }
+  </style>
+</head>
+<body>
+
+  <h1>📚 Perpustakaan Digital</h1>
+
+  <h2>Tambah Buku Baru</h2>
+  <form id="addBookForm">
+    <input type="text" id="title" placeholder="Judul Buku" required>
+    <input type="text" id="author" placeholder="Penulis" required>
+    <input type="number" id="year" placeholder="Tahun Terbit">
+    <button type="submit">Tambah Buku</button>
+  </form>
+
+  <h2>Daftar Buku</h2>
+  <ul id="bookList">Loading...</ul>
+
+  <script>
+    const API_URL = '/api/books';
+
+    // Fetch daftar buku saat halaman dimuat
+    async function loadBooks() {
+      const res = await fetch(API_URL);
+      const books = await res.json();
+      const list = document.getElementById('bookList');
+      list.innerHTML = '';
+
+      if (books.length === 0) {
+        list.innerHTML = '<li>Belum ada buku.</li>';
+        return;
+      }
+
+      books.forEach(book => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span><strong>${book.title}</strong> oleh ${book.author} (${book.year || '-'})</span>
+          <button class="btn-delete" onclick="deleteBook('${book.id}')">Hapus</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Tambah Buku
+    document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+      const year = document.getElementById('year').value;
+
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, author, year })
+      });
+
+      document.getElementById('addBookForm').reset();
+      loadBooks();
+    });
+
+    // Hapus Buku
+    async function deleteBook(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus buku ini?')) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        loadBooks();
+      }
+    }
+
+    loadBooks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "aplikasi-perpustakaan",
+  "version": "1.0.0",
+  "description": "Aplikasi Perpustakaan Sederhana dengan Node.js, Firestore, dan Vercel",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
